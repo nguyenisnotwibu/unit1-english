@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 1 – Views & Voices | Ôn tập tương tác</title>
+<style>
+:root{--navy:#1f3864;--blue:#2e74b5;--green:#2e7d32;--red:#b00020;--amber:#fff3cd;--bg:#f4f6fb;--card:#fff;--line:#e3e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.55}
+header{background:linear-gradient(135deg,#1f3864,#2e74b5);color:#fff;padding:26px 18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+header h1{font-size:1.6rem;letter-spacing:.5px}
+header p{opacity:.9;margin-top:6px;font-size:.95rem}
+.wrap{max-width:960px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:10px}
+.lcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.lcard:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(31,56,100,.18);border-color:var(--blue)}
+.lcard .code{display:inline-block;background:var(--navy);color:#fff;font-weight:700;border-radius:8px;padding:3px 10px;font-size:.85rem}
+.lcard h3{margin:10px 0 6px;font-size:1.05rem;color:var(--navy)}
+.lcard p{font-size:.85rem;color:#556}
+.back{background:none;border:none;color:var(--blue);font-weight:600;cursor:pointer;font-size:.95rem;margin-bottom:8px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tab{padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;font-size:.9rem;color:#445}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{display:none;animation:fade .25s}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+h2.sec{color:var(--navy);margin:6px 0 12px;font-size:1.35rem}
+.hint{font-size:.85rem;color:#889;margin:6px 0 10px}
+/* game selector chips */
+.games{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.gchip{padding:7px 14px;border-radius:18px;border:1.5px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;font-weight:600;font-size:.85rem}
+.gchip.active{background:var(--blue);color:#fff}
+/* flashcards */
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.flip{perspective:1000px;height:130px}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.flip.on .flip-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line)}
+.front{background:#fff}.front b{color:var(--navy);font-size:1.05rem}
+.back-face{background:var(--navy);color:#fff;transform:rotateY(180deg)}
+.back-face .mean{font-weight:700;font-size:1.02rem;margin-bottom:6px}
+.back-face .ex{font-size:.78rem;opacity:.9;font-style:italic}
+/* mcq */
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.q .qt{font-weight:600;margin-bottom:10px}
+.opts{display:grid;gap:8px}
+.opt{padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:#fbfcfe;transition:.12s}
+.opt:hover{border-color:var(--blue)}
+.opt.correct{border-color:var(--green);background:#eefaf0}
+.opt.wrong{border-color:var(--red);background:#fdeef0}
+.opt.disabled{pointer-events:none;opacity:.85}
+/* fill input */
+.q input{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:.95rem;outline:none}
+.q input:focus{border-color:var(--blue)}
+.q.correct input{border-color:var(--green);background:#eefaf0}
+.q.wrong input{border-color:var(--red);background:#fdeef0}
+.fb{font-size:.85rem;margin-top:6px;display:none}
+.q.correct .fb{display:block;color:var(--green)}.q.wrong .fb{display:block;color:var(--red)}
+/* matching */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.col{display:grid;gap:8px}
+.mitem{padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;background:#fff;font-size:.9rem}
+.mitem.sel{border-color:var(--blue);background:#eaf2fb}
+.mitem.done{border-color:var(--green);background:#eefaf0;color:#2e7d32;pointer-events:none;opacity:.75}
+.mitem.bad{border-color:var(--red);background:#fdeef0}
+/* buttons */
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;align-items:center}
+button.act{background:var(--blue);color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:600;cursor:pointer;font-size:.92rem}
+button.act.g{background:var(--green)}button.act.o{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+button.act:hover{filter:brightness(1.07)}
+.score{font-weight:700;font-size:1.05rem;color:var(--navy);margin-left:auto}
+.gbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.gbox li{margin:8px 0 8px 18px}
+.tips{background:var(--amber);border-radius:12px;padding:14px 16px;margin-top:12px}
+.tips b{color:#7a5c00}.tips li{margin:6px 0 6px 18px;font-size:.92rem}
+.progress{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:10px 0}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--green),#66bb6a);transition:.4s}
+.subhead{font-weight:700;color:var(--blue);margin:16px 0 8px;font-size:1.05rem}
+.win{background:#eefaf0;border:1.5px solid var(--green);color:#2e7d32;border-radius:10px;padding:10px 14px;font-weight:700;margin-top:10px;display:none}
+footer{text-align:center;padding:22px;color:#889;font-size:.85rem}
+@media(max-width:560px){.match{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>UNIT 1 – Views & Voices</h1>
+  <p>Cambridge Global English 9 · Ôn từ vựng · Ngữ pháp · Bài tập tương tác</p>
+</header>
+<div class="wrap">
+  <div id="home"><h2 class="sec">Chọn bài học (Lessons 1.1 – 1.8)</h2><div class="grid" id="lgrid"></div></div>
+  <div id="lesson" style="display:none"></div>
+</div>
+<footer>Mỗi lần tải lại / bấm “Đổi đề” sẽ ra đề khác nhau · Chúc em học vui! 🎉</footer>
+<script>
+const LESSONS = [{"code":"1.1","name":"What helps you to learn?","objective":"Học từ vựng về việc học tập & nói chuyện trong lớp; làm quen với -ing forms.","vocab":[["interrupt (v)","ngắt lời","Don't interrupt someone when they are speaking."],["compare (v)","so sánh","When you compare classroom and online learning…"],["concentrate (v)","tập trung","What helps you to concentrate when studying alone?"],["distract (v)","làm sao nhãng","Messages and texts can distract you from homework."],["encourage (v)","khuyến khích","Do your teachers encourage you to do your best?"],["share (v)","chia sẻ","Do you like to share your ideas with others?"],["chat (v)","trò chuyện","How often do you chat with friends on social media?"],["get into trouble","gặp rắc rối","Students get into trouble for talking in class."],["tell somebody off","khiển trách ai","Parents tell you off if you get low marks."],["be supposed to","được cho là phải","You are supposed to do your homework."]],"grammarTitle":"-ing forms (Danh động từ / V-ing) – Giới thiệu","grammarPoints":["Dùng V-ing sau MỘT SỐ động từ nhất định: enjoy, hate, finish, mind, stop, like, love… → I enjoy reading.","Dùng V-ing sau GIỚI TỪ (preposition): by, for, on, of, about, in… → She is good at learning by doing.","Dùng V-ing làm CHỦ NGỮ của câu → Sharing ideas helps me to learn."],"tips":["Sau giới từ LUÔN dùng V-ing, không dùng 'to V': interested IN doing (✗ to do).","Một số cụm cố định: think/wonder about + V-ing; no point in + V-ing; succeed in + V-ing.","Đừng nhầm 'to' giới từ với 'to' nguyên mẫu: look forward TO seeing (V-ing) nhưng want TO see (V nguyên mẫu)."],"bookAnswers":["Workbook Ex.1 Crossword — Across: 2 chat, 4 share, 5 trouble, 6 encourage, 7 distract, 9 distract. Down: 1 compare, 2 concentrate, 3 interrupt, 8 off.","Learner's Book Ex.2 Vocabulary: a interrupt  b compare  c distract  d encourage.","Ex.3 (điền notes): 1 interrupting  2 answers  3 for  4 to  5 doing."],"extra":{"intro":"Chọn dạng đúng của động từ (V-ing / to V).","items":[["I enjoy ______ (read) books about science.","reading"],["She is interested in ______ (learn) Korean.","learning"],["______ (share) ideas helps us to learn faster.","Sharing"],["They finished ______ (do) their homework early.","doing"],["He is good at ______ (solve) problems.","solving"],["We look forward to ______ (meet) you next week.","meeting"],["There is no point in ______ (worry) about the past.","worrying"],["Do you mind ______ (open) the window?","opening"]]}},{"code":"1.2","name":"Teenage psychology","objective":"Đọc hiểu về tâm lý tuổi teen; học từ khóa (key words) và đoán nghĩa qua ngữ cảnh.","vocab":[["ambition (n)","hoài bão","the wish to do well in the future"],["communication (n)","sự giao tiếp","talking or writing to other people"],["creativity (n)","sự sáng tạo","using imagination in art, writing, music…"],["focus (n)","sự tập trung","the ability to concentrate on something"],["problem-solving (n)","giải quyết vấn đề","finding the answer to a difficult question"],["self-analysis (n)","tự phân tích bản thân","understanding yourself"],["social flexibility (n)","linh hoạt xã hội","being able to get on with all sorts of people"],["formidable (adj)","đáng nể, ghê gớm","great, very impressive (from context)"],["stereotype (n)","định kiến, khuôn mẫu","a fixed idea about a group of people"],["growth mindset","tư duy phát triển","believing you can improve through effort"]],"grammarTitle":"Kỹ năng: Đoán nghĩa từ qua ngữ cảnh (Working out meaning from context)","grammarPoints":["Bước 1: Xác định LOẠI TỪ (word class) – danh từ, động từ hay tính từ?","Bước 2: Tìm 'tín hiệu' xung quanh – ví dụ, từ đồng nghĩa/trái nghĩa, dấu (–), 'such as'…","Bước 3: Đoán nghĩa TỐT/XẤU, MẠNH/YẾU rồi kiểm tra bằng từ điển."],"tips":["'formidable' đứng trước danh từ → tính từ. Ngữ cảnh 'good, strong, very impressive' → nghĩa tích cực, mạnh.","Từ ghép với dấu gạch nối thường là danh từ: problem-solving, self-analysis, social-flexibility.","Growth mindset (tư duy phát triển) ↔ fixed mindset (tư duy cố định)."],"bookAnswers":["Ex.1 Match: a creativity  b communication  c ambition  d social flexibility  e self-analysis  f focus  g problem-solving.","Ex.2: 'formidable' là tính từ (adjective), mang nghĩa tích cực và mạnh (great, very impressive).","Ex.3 Growth mindset tốt vì: học sinh chủ động xin phản hồi, dám thử thách bản thân, sẵn sàng học điều mới → tiến bộ hơn."],"extra":{"intro":"Nối từ khóa với định nghĩa.","items":[["ambition","wanting to succeed in the future"],["creativity","using imagination to make new things"],["focus","the ability to concentrate"],["stereotype","a fixed idea about a group"],["self-analysis","understanding your own strengths & weaknesses"]]}},{"code":"1.3","name":"Role models","objective":"Nghe/đọc về hình mẫu (role models); phân biệt Present Simple và Present Continuous.","vocab":[["role model (n)","hình mẫu, thần tượng","someone you look up to"],["inspire (v)","truyền cảm hứng","A role model can inspire us."],["overcome obstacles","vượt qua trở ngại","They help us overcome obstacles."],["look up to sb","kính trọng, ngưỡng mộ","someone we can all look up to"],["be obsessed with","bị ám ảnh bởi","Teenagers are obsessed with celebrities."],["leadership (n)","sự lãnh đạo","She shows real leadership."],["justice (n)","công lý, sự công bằng","a strong sense of justice"],["cheerful (adj)","vui vẻ","He is always cheerful and kind."],["turn to sb for advice","tìm ai để xin lời khuyên","He is the one I turn to for advice."],["influential (adj)","có ảnh hưởng","one of the most influential people"]],"grammarTitle":"Present Simple vs Present Continuous","grammarPoints":["PRESENT SIMPLE: thói quen, sự thật, điều lâu dài. Dấu hiệu: always, usually, often, every day. → She plays tennis.","PRESENT CONTINUOUS: hành động đang xảy ra lúc nói / sắp xếp tạm thời. Dấu hiệu: now, at the moment, this week. → I'm reading a book at the moment.","STATE VERBS (be, have, seem, look, want, need, know, understand, love…) thường KHÔNG chia tiếp diễn. → We admire her. (✗ are admiring)"],"tips":["'always + V-ing' diễn tả sự phàn nàn / thói quen khó chịu: He's always helping other people (nhấn mạnh, hơi bất thường).","Cảm giác/trạng thái: I love this song (✗ I'm loving).","Present continuous cũng dùng cho kế hoạch tương lai đã sắp xếp: I'm meeting her tomorrow."],"bookAnswers":["Workbook Ex.2: a seems, doesn't have  b spend  c actively do  d look up to  e works.","Learner's Book Ex.3: a 's helping  b say  c 're / are  d 'm going  e encourages.","Ex.3 (WB messages): 1 Are you getting  2 does the event start  3 does the ticket price include  4 are you doing  5 has  6 love  7 'm sending."],"extra":{"intro":"Chia động từ ở Present Simple hoặc Present Continuous.","items":[["My brother ______ (play) football every weekend.","plays"],["Listen! The teacher ______ (talk) to the new student.","is talking"],["I ______ (not understand) this question.","don't understand"],["We ______ (read) an interesting book at the moment.","are reading"],["She ______ (want) to become a doctor.","wants"],["They ______ (always / arrive) late! It's so annoying.","are always arriving"],["Water ______ (boil) at 100°C.","boils"],["Look! It ______ (rain) outside.","is raining"]]}},{"code":"1.4","name":"Teenage voices","objective":"Học tính từ mô tả thái độ; dùng Present Simple Passive (bị động thì hiện tại đơn).","vocab":[["respectful (adj)","lễ phép, tôn trọng","polite, considerate"],["responsible (adj)","có trách nhiệm","She takes responsibility."],["obedient (adj)","vâng lời","do what you're told to do"],["disobedient (adj)","không vâng lời","not doing what you're told"],["rebellious (adj)","nổi loạn","not following the rules"],["defiant (adj)","thách thức, bất tuân","refusing to obey"],["rude / bad-mannered (adj)","thô lỗ, vô lễ","not polite"],["caring / gracious (adj)","quan tâm / tử tế","kind to others"],["succumb to (v)","khuất phục, sa vào","succumb to bad influences"],["destiny (n)","số phận","Stereotypes are not destiny."]],"grammarTitle":"Present Simple Passive (Bị động – Hiện tại đơn)","grammarPoints":["Cấu trúc: S + am/is/are + V3/ed (+ by O). → Teenagers are told what to do.","Dùng khi: KHÔNG biết ai làm, hoặc người làm KHÔNG quan trọng, hoặc muốn nhấn mạnh HÀNH ĐỘNG/đối tượng.","Chủ động → Bị động: People often tell teens what to do → Teens are often told what to do."],"tips":["Trạng từ tần suất (often, sometimes, always) đứng GIỮA am/is/are và V3: We are OFTEN told…","Chỉ ngoại động từ (transitive – có tân ngữ) mới chuyển được bị động.","'by + tác nhân' chỉ thêm khi cần thiết: The rules are made by teachers."],"bookAnswers":["Ex.1 (đổi từ gạch chân sang tính từ): a caring  b responsible  c obedient  d rebellious  e disobedient  f respectful/considerate  g respectful.","Ex.5: a I'm (often) told that I'm…  b We are (sometimes) told that…  c We are thought to be…  d I'm / We are expected to…  e I'm not / We aren't expected to…","Reading Ex.2: các định kiến (teens behave worse, skip schoolwork, succumb to bad influences) — bài báo kết luận 'stereotypes are not destiny'."],"extra":{"intro":"Đổi các câu sau sang bị động (Present Simple Passive).","items":[["Teachers make the rules.","The rules are made (by teachers)."],["People speak English all over the world.","English is spoken all over the world."],["They clean the classroom every day.","The classroom is cleaned every day."],["Somebody tells the students what to do.","The students are told what to do."],["We don't allow phones in class.","Phones are not allowed in class."],["Do people respect older adults?","Are older adults respected?"]]}},{"code":"1.5","name":"Facts and opinions (Media studies)","objective":"Phân biệt SỰ THẬT (fact) và Ý KIẾN (opinion); từ vựng về biểu tình & truyền thông.","vocab":[["demonstration / demo (n)","cuộc biểu tình","took part in a demonstration"],["protesters (n)","người biểu tình","Protesters were peaceful."],["placard (n)","biểu ngữ cầm tay","carrying placards with messages"],["march (v/n)","tuần hành","They marched to Parliament Square."],["issue (n)","vấn đề","an important subject or problem"],["arrested (adj/v)","bị bắt giữ","Several people were arrested by police."],["headline (n)","tiêu đề báo","the title of the article"],["attitude (n)","thái độ","the reporter's attitude"],["rage (n)","cơn thịnh nộ","extreme anger you can't control"],["go on strike","đình công/bãi khóa","stop working/studying as a protest"]],"grammarTitle":"Kỹ năng: FACT vs OPINION (Sự thật và ý kiến)","grammarPoints":["FACT: có thể kiểm chứng, có số liệu, ngày tháng. → '150 demonstrations took place yesterday.'","OPINION: quan điểm, cảm xúc, đánh giá của người viết. → 'The atmosphere was calm and respectful.'","Chú ý tính từ đánh giá (calm, peaceful, defiant), động từ chỉ cảm xúc, và cách chọn TIÊU ĐỀ để nhận ra thái độ."],"tips":["Hai bài báo về CÙNG một sự kiện có thể tạo ẤN TƯỢNG khác nhau qua: tiêu đề, ảnh, cách chọn từ.","Từ mang màu sắc tiêu cực: 'rage', 'flooded the streets', 'chaos' → thái độ chê.","Từ mang màu sắc tích cực: 'peaceful', 'respectful', 'important' → thái độ ủng hộ."],"bookAnswers":["Ex.1 (điền từ): 1 demonstration  2 march  3 placards  4 protesters  5 issue  6 demonstrators  7 marched  8 arrested.","Ex.2 c: 'There is no planet B' = Trái Đất là hành tinh duy nhất, ta phải bảo vệ nó (đáp án C – We must save this planet).","So sánh 2 bài: TODAY (Teenage rage) mang thái độ TIÊU CỰC; THE EXAMINER mang thái độ TÍCH CỰC/ủng hộ học sinh."],"extra":{"intro":"Đánh dấu F (Fact) hay O (Opinion).","items":[["Almost 200 students marched in central London.","F"],["The demonstration was the best protest of the year.","O"],["The march started at Parliament Square.","F"],["Teenagers today are lazy and rude.","O"],["Several people were arrested by the police.","F"],["Climate change is the most important issue in the world.","O"]]}},{"code":"1.6","name":"From ideas into words","objective":"Học cách thuyết trình tốt; dùng Present Continuous Passive (bị động hiện tại tiếp diễn).","vocab":[["presentation (n)","bài thuyết trình","make a good presentation"],["slide (n)","trang trình chiếu","Don't put too much text on a slide."],["audience (n)","khán giả","Involve your audience from the start."],["rehearse (v)","tập dượt","Rehearse your presentation carefully."],["structure (n)","cấu trúc","a clear idea of the structure"],["make a suggestion","đưa ra đề nghị","'Why don't we…?'"],["ask for advice","xin lời khuyên","'Can you help me?'"],["brainstorm (v)","động não, nghĩ ý tưởng","brainstorm some ideas together"],["visuals (n)","hình ảnh minh họa","add some visuals to each slide"],["entertained (adj)","được giải trí","keep the audience entertained"]],"grammarTitle":"Present Continuous Passive (Bị động – Hiện tại tiếp diễn)","grammarPoints":["Cấu trúc: S + am/is/are + being + V3/ed (+ by O). → A new gym is being built next to our school.","Dùng cho hành động ĐANG được thực hiện ngay lúc nói. → The windows are being washed today.","Câu hỏi: đưa am/is/are lên trước chủ ngữ, 'being' giữ nguyên. → Is the car being repaired?"],"tips":["Đừng quên 'being' — đây là lỗi hay gặp: The gym is being built (✗ is built / ✗ is build).","V3 phải đúng dạng quá khứ phân từ: built, washed, delivered, sold, made.","Phủ định: is/are + not + being + V3. → These computers aren't being used."],"bookAnswers":["Workbook Ex.1: a is being given  b is being held  c are being repaired  d is being collected  e are being told  f is not being made.","Ex.2 (sửa lỗi): a are being interviewed  b is being built  c are being washed  d are being delivered  e are being sold  f isn't being used.","Ex.3 (Challenge): a is being cleaned  b is being used  c are being delivered  d is being painted  e is not being watched  f is being repaired."],"extra":{"intro":"Hoàn thành câu ở Present Continuous Passive.","items":[["The new library ______ (build) at the moment.","is being built"],["Our exam papers ______ (mark) right now.","are being marked"],["Look — the classroom ______ (clean).","is being cleaned"],["The tickets ______ (sell) very quickly.","are being sold"],["This computer ______ (not use) at the moment.","is not being used"],["______ the car ______ (repair) today?","Is / being repaired"]]}},{"code":"1.7","name":"Improve your writing","objective":"Viết EMAIL thân mật (informal email): mở đầu, thân bài, kết thúc, giọng văn phù hợp.","vocab":[["appreciate (v)","trân trọng, cảm kích","I'd really appreciate your help."],["wonder (v)","tự hỏi, băn khoăn","I wonder if you could help me."],["in advance","trước, sẵn","Thank you in advance."],["look forward to + V-ing","mong chờ","Looking forward to hearing from you."],["get in touch","liên lạc","It's been a long time since we got in touch."],["favour (n)","sự giúp đỡ","I'd like to ask you a favour."],["reason (n)","lý do","The reason I'm writing is…"],["hearing (from you)","nghe tin từ bạn","I look forward to hearing from you."],["informal (adj)","thân mật","the tone of the email is informal/friendly"],["schoolwork (n)","việc học ở trường","busy with schoolwork"]],"grammarTitle":"Cấu trúc EMAIL thân mật (Informal email)","grammarPoints":["MỞ ĐẦU: Hi/Dear + tên. Hỏi thăm: 'I hope you and your family are well.' / 'How are you?'","LÝ DO VIẾT: 'Anyway, the reason I'm writing is…' / 'I'm writing to ask you for some help.'","THÂN BÀI: đặt câu hỏi/đưa nội dung. KẾT: 'Thank you in advance.' / 'Looking forward to hearing from you.' + tên."],"tips":["Giọng văn thân mật: dùng viết tắt (I'm, don't), câu ngắn, thân thiện.","Sau 'Looking forward to' và 'thank you for' → luôn V-ing (hearing, helping).","Sắp xếp bố cục: chào hỏi → lý do → nội dung/câu hỏi → cảm ơn → chào tạm biệt."],"bookAnswers":["Workbook Ex.1: a well  b reason  c wonder  d appreciate  e advance  f hearing.","Ex.2 (thứ tự email): 1 Hi Monica  2 How are you?  3 I haven't heard from you for ages.  4 I often think about you and our summer holiday last year.  5 Have you been very busy with schoolwork?  6 Anyway, I'd like to ask you a favour…  7 Are you still doing karate?","Learner's Book: email của Céline hỏi 3 điều — (1) định kiến về người lớn tuổi, (2) người lớn tuổi trên truyền thông, (3) hình mẫu là người trẻ hay lớn tuổi."],"extra":{"intro":"Điền cụm từ phù hợp vào email (well / reason / wonder / appreciate / advance / hearing).","items":[["I hope you are ______.","well"],["The ______ I'm writing is to ask for help.","reason"],["I ______ if you could answer some questions.","wonder"],["I'd really ______ your help.","appreciate"],["Thank you in ______.","advance"],["Looking forward to ______ from you.","hearing"]]}},{"code":"1.8","name":"Project challenge","objective":"Đọc & viết TỰ TRUYỆN (autobiography); làm dự án thuyết trình về cuộc sống tuổi teen.","vocab":[["autobiography (n)","tự truyện","an account of your own life"],["earliest memory","ký ức sớm nhất","What is your earliest memory?"],["influence (n)","ảnh hưởng","the biggest influence on your life"],["sociable (adj)","hòa đồng","I'm more sociable and talkative now."],["chronologically (adv)","theo trình tự thời gian","Number the questions chronologically."],["unforgettable (adj)","khó quên","The holiday was truly unforgettable."],["encourage (v)","động viên","She encouraged me to do my best."],["interpret (v)","diễn giải, lý giải","interpret a photo / write an account"],["account (n)","bài tường thuật","write an account of a photo"],["conclusion (n)","kết luận","conclusion and questions"]],"grammarTitle":"Viết tự truyện & sắp xếp ý theo trình tự thời gian","grammarPoints":["Tự truyện kể theo TRÌNH TỰ THỜI GIAN: quá khứ → hiện tại (from the past to the present).","Dùng thì QUÁ KHỨ ĐƠN cho ký ức: 'When I was 5, I was shy.' và HIỆN TẠI cho bây giờ: 'Now I'm more sociable.'","Các câu hỏi gợi ý: earliest memory? / best holiday? / biggest influence? / what were you like when younger?"],"tips":["Mở đầu mỗi ý bằng mốc thời gian: When I was…, At the age of…, Last year…, Now…","Dùng tính từ miêu tả tính cách (shy, quiet, talkative, sociable) để bài sinh động.","Kết bài bằng ước mơ tương lai: 'I want to be an underwater photographer one day!'"],"bookAnswers":["Ex.1 Match câu với câu hỏi: A → What were you like when younger? | B → What was your bedroom like? | C → earliest memory? | D → biggest influence? | E → best holiday experience?","Ex.2 Sắp xếp thứ tự thời gian (chronological): C (earliest memory) → B (bedroom age 8) → A (age 5–6 personality) → D (influence) → E (best holiday last year).","Project 2: thuyết trình 5 phần — Stereotypes / The teenage brain / Life at school / Role models / Conclusion and questions."],"extra":{"intro":"Sắp xếp các mốc thời gian sau theo trình tự (1 = sớm nhất → 4 = gần nhất).","items":[["Now I want to be a photographer.","4"],["When I was a baby, I slept in a pram.","1"],["Last year I went scuba diving in Mexico.","3"],["When I was 8, my bedroom was purple.","2"]]}}];
+const norm = s => (s||"").toLowerCase().replace(/[.,!?;:'"()]/g,"").replace(/\s+/g," ").trim();
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function sample(arr,n,exclude){const pool=arr.filter(x=>x!==exclude);return shuffle(pool).slice(0,n);}
+const ALLVOCAB=LESSONS.flatMap(L=>L.vocab);
+
+function renderHome(){
+  const g=document.getElementById('lgrid');g.innerHTML='';
+  LESSONS.forEach((L,i)=>{
+    const c=el('div','lcard');
+    c.innerHTML='<span class="code">Bài '+L.code+'</span><h3>'+L.name+'</h3><p>'+L.objective+'</p>';
+    c.onclick=()=>openLesson(i);g.appendChild(c);
+  });
+}
+
+function openLesson(i){
+  const L=LESSONS[i];
+  document.getElementById('home').style.display='none';
+  const box=document.getElementById('lesson');box.style.display='block';box.innerHTML='';
+  const back=el('button','back','← Về danh sách bài');
+  back.onclick=()=>{box.style.display='none';document.getElementById('home').style.display='block';window.scrollTo(0,0);};
+  box.appendChild(back);
+  box.appendChild(el('h2','sec','Bài '+L.code+' – '+L.name));
+
+  const tabs=el('div','tabs');const panels=[];
+  ['🎮 Ôn từ vựng','📘 Ngữ pháp','✍️ Bài tập'].forEach((n,ti)=>{
+    const t=el('div','tab'+(ti===0?' active':''),n);
+    t.onclick=()=>{tabs.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');panels.forEach(p=>p.classList.remove('active'));panels[ti].classList.add('active');};
+    tabs.appendChild(t);
+  });
+  box.appendChild(tabs);
+
+  const p1=el('div','panel active');buildVocabGames(p1,L);panels.push(p1);box.appendChild(p1);
+  const p2=el('div','panel');buildGrammar(p2,L);panels.push(p2);box.appendChild(p2);
+  const p3=el('div','panel');buildExercises(p3,L);panels.push(p3);box.appendChild(p3);
+  window.scrollTo(0,0);
+}
+
+/* ---------- VOCAB GAMES ---------- */
+function buildVocabGames(root,L){
+  const games=['📇 Thẻ ghi nhớ','🟢 Chọn nghĩa','🔤 Chọn từ','🔗 Nối từ','⌨️ Điền từ'];
+  const chips=el('div','games');const stage=el('div','');
+  const renderers=[gFlash,gWordToMean,gMeanToWord,gMatch,gType];
+  games.forEach((g,gi)=>{
+    const c=el('div','gchip'+(gi===0?' active':''),g);
+    c.onclick=()=>{chips.querySelectorAll('.gchip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderers[gi](stage,L);};
+    chips.appendChild(c);
+  });
+  root.appendChild(chips);root.appendChild(stage);gFlash(stage,L);
+}
+function scoreBar(){const p=el('div','progress','<div></div>');const s=el('div','score','');return{p,s,set(o,t){p.firstChild.style.width=(o/t*100)+'%';s.textContent=o+' / '+t;}};}
+
+function gFlash(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Bấm vào thẻ để lật xem nghĩa & ví dụ. Bấm “Xáo thẻ” để đổi thứ tự.'));
+  const grid=el('div','fc-grid');
+  function draw(){grid.innerHTML='';shuffle(L.vocab).forEach(v=>{
+    const f=el('div','flip');
+    f.innerHTML='<div class="flip-inner"><div class="face front"><b>'+v[0]+'</b></div><div class="face back-face"><div class="mean">'+v[1]+'</div><div class="ex">'+v[2]+'</div></div></div>';
+    f.onclick=()=>f.classList.toggle('on');grid.appendChild(f);});}
+  const row=el('div','btnrow');const b=el('button','act o','🔀 Xáo thẻ');b.onclick=draw;row.appendChild(b);
+  stage.appendChild(row);stage.appendChild(grid);draw();
+}
+function mcqGame(stage,L,makeQ,intro){
+  stage.innerHTML='';stage.appendChild(el('p','hint',intro));
+  const sb=scoreBar();stage.appendChild(sb.p);const holder=el('div','');stage.appendChild(holder);
+  const win=el('div','win','🎉 Tuyệt vời! Em đã trả lời hết!');
+  const row=el('div','btnrow');const nb=el('button','act o','🔀 Đổi đề');row.appendChild(nb);row.appendChild(sb.s);
+  stage.appendChild(row);stage.appendChild(win);
+  let total=0,ok=0;
+  function build(){holder.innerHTML='';win.style.display='none';ok=0;
+    const qs=shuffle(L.vocab);total=qs.length;sb.set(0,total);
+    qs.forEach((v,qi)=>{
+      const {stem,correct,options}=makeQ(v,L);
+      const q=el('div','q');q.appendChild(el('div','qt',(qi+1)+'. '+stem));
+      const od=el('div','opts');
+      shuffle(options).forEach(opt=>{
+        const o=el('div','opt',opt);
+        o.onclick=()=>{
+          od.querySelectorAll('.opt').forEach(x=>x.classList.add('disabled'));
+          if(opt===correct){o.classList.add('correct');ok++;}
+          else{o.classList.add('wrong');od.querySelectorAll('.opt').forEach(x=>{if(x.textContent===correct)x.classList.add('correct');});}
+          sb.set(ok,total);if(document.querySelectorAll('.q .opt.disabled').length>=0){}
+          if([...holder.querySelectorAll('.opts')].every(g=>g.querySelector('.disabled')))win.style.display='block';
+        };
+        od.appendChild(o);
+      });
+      q.appendChild(od);holder.appendChild(q);
+    });
+  }
+  nb.onclick=build;build();
+}
+function gWordToMean(stage,L){mcqGame(stage,L,(v,L)=>{
+  const distract=sample(ALLVOCAB.map(x=>x[1]),3,v[1]);
+  return{stem:'“<b>'+v[0]+'</b>” nghĩa là gì?',correct:v[1],options:[v[1],...distract]};
+},'Chọn NGHĨA đúng của từ.');}
+function gMeanToWord(stage,L){mcqGame(stage,L,(v,L)=>{
+  const distract=sample(ALLVOCAB.map(x=>x[0]),3,v[0]);
+  return{stem:'Từ nào có nghĩa: “<b>'+v[1]+'</b>”?',correct:v[0],options:[v[0],...distract]};
+},'Chọn TỪ đúng theo nghĩa.');}
+
+function gMatch(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Bấm 1 từ bên trái rồi bấm nghĩa đúng bên phải để nối. Nối hết là thắng!'));
+  const sb=scoreBar();stage.appendChild(sb.p);
+  const win=el('div','win','🎉 Xuất sắc! Em đã nối đúng tất cả!');
+  const wrap=el('div','match');const left=el('div','col');const right=el('div','col');
+  wrap.appendChild(left);wrap.appendChild(right);stage.appendChild(wrap);
+  const row=el('div','btnrow');const nb=el('button','act o','🔀 Chơi lại');row.appendChild(nb);row.appendChild(sb.s);
+  stage.appendChild(row);stage.appendChild(win);
+  function build(){left.innerHTML='';right.innerHTML='';win.style.display='none';
+    const pick=shuffle(L.vocab).slice(0,Math.min(6,L.vocab.length));
+    const total=pick.length;let done=0;sb.set(0,total);let sel=null;
+    pick.forEach(v=>{const w=el('div','mitem',v[0]);w.dataset.k=v[0];left.appendChild(w);
+      w.onclick=()=>{if(sel)sel.classList.remove('sel');sel=w;w.classList.add('sel');};});
+    shuffle(pick).forEach(v=>{const m=el('div','mitem',v[1]);m.dataset.k=v[0];right.appendChild(m);
+      m.onclick=()=>{if(!sel)return;
+        if(sel.dataset.k===m.dataset.k){sel.classList.remove('sel');sel.classList.add('done');m.classList.add('done');sel=null;done++;sb.set(done,total);if(done===total)win.style.display='block';}
+        else{m.classList.add('bad');const s=sel;setTimeout(()=>{m.classList.remove('bad');s.classList.remove('sel');},450);sel=null;}
+      };});
+  }
+  nb.onclick=build;build();
+}
+function gType(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Đọc nghĩa (và ví dụ) rồi gõ lại TỪ tiếng Anh. Bấm “Đổi đề” để ra câu khác.'));
+  const sb=scoreBar();stage.appendChild(sb.p);const holder=el('div','');stage.appendChild(holder);
+  const row=el('div','btnrow');const chk=el('button','act g','✓ Kiểm tra');const nb=el('button','act o','🔀 Đổi đề');
+  row.appendChild(chk);row.appendChild(nb);row.appendChild(sb.s);stage.appendChild(row);
+  let qs=[];
+  function build(){holder.innerHTML='';qs=[];
+    shuffle(L.vocab).forEach((v,qi)=>{
+      const hideWord=w=>v[2].replace(new RegExp(v[0].split(' ')[0].replace(/[^a-zA-Z]/g,''),'ig'),'____');
+      const q=el('div','q');
+      q.innerHTML='<div class="qt">'+(qi+1)+'. Nghĩa: <b>'+v[1]+'</b><br><span style="font-size:.85rem;color:#667;font-style:italic">Ví dụ: '+hideWord()+'</span></div><input placeholder="Gõ từ tiếng Anh..." autocomplete="off"><div class="fb"></div>';
+      holder.appendChild(q);qs.push({q,ans:v[0]});
+    });sb.set(0,qs.length);
+  }
+  function grade(){let ok=0;qs.forEach(o=>{const inp=o.q.querySelector('input'),fb=o.q.querySelector('.fb');o.q.classList.remove('correct','wrong');if(!inp.value.trim()){fb.textContent='';return;}
+    const u=norm(inp.value),a=norm(o.ans);const good=u===a||a.includes(u)&&u.length>2||u.includes(a.split(' ')[0]);
+    if(good){o.q.classList.add('correct');fb.textContent='Chính xác! ✔';ok++;}else{o.q.classList.add('wrong');fb.textContent='Đáp án: '+o.ans;}});sb.set(ok,qs.length);}
+  chk.onclick=grade;nb.onclick=build;build();
+}
+
+/* ---------- GRAMMAR ---------- */
+function buildGrammar(root,L){
+  const gb=el('div','gbox');
+  gb.innerHTML='<h3 style="color:var(--blue);margin-bottom:8px">'+L.grammarTitle+'</h3><ul>'+L.grammarPoints.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  root.appendChild(gb);
+  const tp=el('div','tips');tp.innerHTML='<b>💡 TIPS & TRICKS – Lưu ý</b><ul>'+L.tips.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  root.appendChild(tp);
+}
+
+/* ---------- EXERCISES (grammar + vocab review), reshuffled ---------- */
+function buildExercises(root,L){
+  const top=el('div','btnrow');const nb=el('button','act o','🔀 Đổi đề (xáo trộn)');top.appendChild(nb);
+  root.appendChild(top);
+  const gWrap=el('div','');root.appendChild(gWrap);
+  function build(){
+    gWrap.innerHTML='';
+    // A) Grammar exercises shuffled
+    gWrap.appendChild(el('div','subhead','A. Ngữ pháp – '+L.grammarTitle));
+    const sbG=scoreBar();gWrap.appendChild(sbG.p);const gHolder=el('div','');gWrap.appendChild(gHolder);
+    const gqs=[];
+    shuffle(L.extra.items).forEach((it,qi)=>{
+      const q=el('div','q');const label=it[0].includes('_')?it[0]:('<b>'+it[0]+'</b> → ?');
+      q.innerHTML='<div class="qt">'+(qi+1)+'. '+label+'</div><input placeholder="Nhập đáp án..." autocomplete="off"><div class="fb"></div>';
+      gHolder.appendChild(q);gqs.push({q,ans:it[1]});
+    });sbG.set(0,gqs.length);
+    const gRow=el('div','btnrow');const gChk=el('button','act g','✓ Chấm phần A');gRow.appendChild(gChk);gRow.appendChild(sbG.s);gWrap.appendChild(gRow);
+    gChk.onclick=()=>{let ok=0;gqs.forEach(o=>{const inp=o.q.querySelector('input'),fb=o.q.querySelector('.fb');o.q.classList.remove('correct','wrong');if(!inp.value.trim()){fb.textContent='';return;}
+      const u=norm(inp.value),a=norm(o.ans);const good=u===a||a.split(/\s*\/\s*/).every(p=>u.includes(norm(p)))||(u.split(' ').length>1&&a.includes(u)&&u.length>3);
+      if(good){o.q.classList.add('correct');fb.textContent='Chính xác! ✔';ok++;}else{o.q.classList.add('wrong');fb.textContent='Đáp án: '+o.ans;}});sbG.set(ok,gqs.length);};
+
+    // B) Vocabulary review (MCQ word->meaning) shuffled + random distractors
+    gWrap.appendChild(el('div','subhead','B. Ôn từ vựng (chọn nghĩa đúng)'));
+    const sbV=scoreBar();gWrap.appendChild(sbV.p);const vHolder=el('div','');gWrap.appendChild(vHolder);
+    let vok=0,vtot=0;const picks=shuffle(L.vocab).slice(0,Math.min(6,L.vocab.length));vtot=picks.length;sbV.set(0,vtot);
+    picks.forEach((v,qi)=>{
+      const correct=v[1];const options=shuffle([correct,...sample(ALLVOCAB.map(x=>x[1]),3,correct)]);
+      const q=el('div','q');q.appendChild(el('div','qt',(qi+1)+'. “<b>'+v[0]+'</b>” =?'));
+      const od=el('div','opts');
+      options.forEach(opt=>{const o=el('div','opt',opt);o.onclick=()=>{od.querySelectorAll('.opt').forEach(x=>x.classList.add('disabled'));
+        if(opt===correct){o.classList.add('correct');vok++;}else{o.classList.add('wrong');od.querySelectorAll('.opt').forEach(x=>{if(x.textContent===correct)x.classList.add('correct');});}
+        sbV.set(vok,vtot);};od.appendChild(o);});
+      q.appendChild(od);vHolder.appendChild(q);
+    });
+  }
+  nb.onclick=build;build();
+}
+
+renderHome();
+</script>
+</body>
+</html>
