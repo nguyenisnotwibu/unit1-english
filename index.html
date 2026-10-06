@@ -80,6 +80,10 @@ button.act:hover{filter:brightness(1.07)}
 .win{background:#eefaf0;border:1.5px solid var(--green);color:#2e7d32;border-radius:10px;padding:10px 14px;font-weight:700;margin-top:10px;display:none}
 footer{text-align:center;padding:22px;color:#889;font-size:.85rem}
 @media(max-width:560px){.match{grid-template-columns:1fr}}
+
+.unitnav{max-width:960px;margin:14px auto 0;padding:0 18px;display:flex;gap:10px;flex-wrap:wrap}
+.unitnav a{padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:700;color:var(--navy);background:#fff;border:1.5px solid var(--line)}
+.unitnav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
 </style>
 </head>
 <body>
@@ -87,6 +91,7 @@ footer{text-align:center;padding:22px;color:#889;font-size:.85rem}
   <h1>UNIT 1 – Views & Voices</h1>
   <p>Cambridge Global English 9 · Ôn từ vựng · Ngữ pháp · Bài tập tương tác</p>
 </header>
+<div class="unitnav"><a href="index.html" class="active">📘 Unit 1 – Views & Voices</a><a href="unit2.html">🥗 Unit 2 – Well-being</a></div>
 <div class="wrap">
   <div id="home"><h2 class="sec">Chọn bài học (Lessons 1.1 – 1.8)</h2><div class="grid" id="lgrid"></div></div>
   <div id="lesson" style="display:none"></div>

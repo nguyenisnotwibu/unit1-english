@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 2 – Well-being | Ôn tập tương tác</title>
+<style>
+:root{--navy:#1f3864;--blue:#2e74b5;--green:#2e7d32;--red:#b00020;--amber:#fff3cd;--bg:#f4f6fb;--card:#fff;--line:#e3e8f0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:var(--bg);color:#1a2233;line-height:1.55}
+header{background:linear-gradient(135deg,#1f3864,#2e74b5);color:#fff;padding:26px 18px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+header h1{font-size:1.6rem;letter-spacing:.5px}
+header p{opacity:.9;margin-top:6px;font-size:.95rem}
+.wrap{max-width:960px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:10px}
+.lcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.15s;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.lcard:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(31,56,100,.18);border-color:var(--blue)}
+.lcard .code{display:inline-block;background:var(--navy);color:#fff;font-weight:700;border-radius:8px;padding:3px 10px;font-size:.85rem}
+.lcard h3{margin:10px 0 6px;font-size:1.05rem;color:var(--navy)}
+.lcard p{font-size:.85rem;color:#556}
+.back{background:none;border:none;color:var(--blue);font-weight:600;cursor:pointer;font-size:.95rem;margin-bottom:8px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.tab{padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:600;font-size:.9rem;color:#445}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{display:none;animation:fade .25s}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1}}
+h2.sec{color:var(--navy);margin:6px 0 12px;font-size:1.35rem}
+.hint{font-size:.85rem;color:#889;margin:6px 0 10px}
+/* game selector chips */
+.games{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.gchip{padding:7px 14px;border-radius:18px;border:1.5px solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;font-weight:600;font-size:.85rem}
+.gchip.active{background:var(--blue);color:#fff}
+/* flashcards */
+.fc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.flip{perspective:1000px;height:130px}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d;cursor:pointer}
+.flip.on .flip-inner{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:12px;padding:12px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--line)}
+.front{background:#fff}.front b{color:var(--navy);font-size:1.05rem}
+.back-face{background:var(--navy);color:#fff;transform:rotateY(180deg)}
+.back-face .mean{font-weight:700;font-size:1.02rem;margin-bottom:6px}
+.back-face .ex{font-size:.78rem;opacity:.9;font-style:italic}
+/* mcq */
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.q .qt{font-weight:600;margin-bottom:10px}
+.opts{display:grid;gap:8px}
+.opt{padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;background:#fbfcfe;transition:.12s}
+.opt:hover{border-color:var(--blue)}
+.opt.correct{border-color:var(--green);background:#eefaf0}
+.opt.wrong{border-color:var(--red);background:#fdeef0}
+.opt.disabled{pointer-events:none;opacity:.85}
+/* fill input */
+.q input{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:8px;font-size:.95rem;outline:none}
+.q input:focus{border-color:var(--blue)}
+.q.correct input{border-color:var(--green);background:#eefaf0}
+.q.wrong input{border-color:var(--red);background:#fdeef0}
+.fb{font-size:.85rem;margin-top:6px;display:none}
+.q.correct .fb{display:block;color:var(--green)}.q.wrong .fb{display:block;color:var(--red)}
+/* matching */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.col{display:grid;gap:8px}
+.mitem{padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;cursor:pointer;background:#fff;font-size:.9rem}
+.mitem.sel{border-color:var(--blue);background:#eaf2fb}
+.mitem.done{border-color:var(--green);background:#eefaf0;color:#2e7d32;pointer-events:none;opacity:.75}
+.mitem.bad{border-color:var(--red);background:#fdeef0}
+/* buttons */
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;align-items:center}
+button.act{background:var(--blue);color:#fff;border:none;padding:10px 18px;border-radius:22px;font-weight:600;cursor:pointer;font-size:.92rem}
+button.act.g{background:var(--green)}button.act.o{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+button.act:hover{filter:brightness(1.07)}
+.score{font-weight:700;font-size:1.05rem;color:var(--navy);margin-left:auto}
+.gbox{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.gbox li{margin:8px 0 8px 18px}
+.tips{background:var(--amber);border-radius:12px;padding:14px 16px;margin-top:12px}
+.tips b{color:#7a5c00}.tips li{margin:6px 0 6px 18px;font-size:.92rem}
+.progress{height:8px;background:var(--line);border-radius:8px;overflow:hidden;margin:10px 0}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--green),#66bb6a);transition:.4s}
+.subhead{font-weight:700;color:var(--blue);margin:16px 0 8px;font-size:1.05rem}
+.win{background:#eefaf0;border:1.5px solid var(--green);color:#2e7d32;border-radius:10px;padding:10px 14px;font-weight:700;margin-top:10px;display:none}
+footer{text-align:center;padding:22px;color:#889;font-size:.85rem}
+@media(max-width:560px){.match{grid-template-columns:1fr}}
+
+.unitnav{max-width:960px;margin:14px auto 0;padding:0 18px;display:flex;gap:10px;flex-wrap:wrap}
+.unitnav a{padding:8px 16px;border-radius:20px;text-decoration:none;font-weight:700;color:var(--navy);background:#fff;border:1.5px solid var(--line)}
+.unitnav a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+</style>
+</head>
+<body>
+<header>
+  <h1>UNIT 2 – Well-being</h1>
+  <p>Cambridge Lower Secondary English 9 · Food &amp; health · Sleep · Ôn tập tương tác</p>
+</header>
+<div class="unitnav"><a href="index.html">📘 Unit 1 – Views & Voices</a><a href="unit2.html" class="active">🥗 Unit 2 – Well-being</a></div>
+<div class="wrap">
+  <div id="home"><h2 class="sec">Chọn bài học (Lessons 2.1 – 2.3 + Writing Project)</h2><div class="grid" id="lgrid"></div></div>
+  <div id="lesson" style="display:none"></div>
+</div>
+<footer>Mỗi lần tải lại / bấm “Đổi đề” sẽ ra đề khác nhau · Chúc em học vui! 🎉</footer>
+<script>
+const LESSONS = [{"code":"2.1","name":"Food for health","objective":"Từ vựng về ăn uống & sức khỏe; dùng danh từ trừu tượng (abstract nouns) và mạo từ.","vocab":[["balanced diet","chế độ ăn cân bằng","You need a balanced diet to stay healthy."],["calories (n)","ca-lo (năng lượng)","Junk food contains a lot of calories."],["consume (v)","tiêu thụ","We consume too much sugar."],["nutrition (n)","dinh dưỡng","Junk food doesn't provide good nutrition."],["obesity (n)","béo phì","Obesity is a global issue."],["malnutrition (n)","suy dinh dưỡng","Malnutrition affects health."],["undernourished (adj)","thiếu ăn, thiếu dinh dưỡng","undernourished children"],["poverty (n)","nghèo đói","a link between poverty and malnutrition"],["junk food / fast food","đồ ăn vặt / đồ ăn nhanh","Junk food is cheap but unhealthy."],["food waste","lãng phí thực phẩm","We should reduce food waste."],["vegetarian (n/adj)","người ăn chay","She follows a vegetarian diet."],["protein (n)","chất đạm","Children need enough protein to grow."]],"grammarTitle":"Danh từ trừu tượng (Abstract nouns) & mạo từ","grammarPoints":["Danh từ trừu tượng chỉ khái niệm, không sờ được: health, poverty, nutrition, obesity, malnutrition…","Khi nói CHUNG CHUNG → KHÔNG dùng mạo từ: 'Junk food doesn't provide good nutrition.' / 'Malnutrition is a serious problem.'","Khi được XÁC ĐỊNH cụ thể (bởi 'of…' hoặc mệnh đề quan hệ) → dùng 'the': the health OF children, the importance OF reducing waste, the waste (that is) created by shoppers."],"tips":["Hầu hết danh từ trừu tượng là KHÔNG đếm được → không dùng 'a/an', không thêm '-s'.","So sánh: 'Poverty causes illness' (chung) ↔ 'The poverty in this area is severe' (cụ thể).","Mẹo: thấy 'of…' hoặc mệnh đề quan hệ sau danh từ trừu tượng → thường cần 'the'."],"extra":{"intro":"Thêm 'the' nếu cần; nếu KHÔNG cần mạo từ, gõ 'x'.","items":[["Malnutrition affects ______ health of children and adults.","the"],["Not having enough to eat leads to ______ illness and disease.","x"],["There is a link between ______ poverty and malnutrition.","x"],["Junk food doesn't provide good ______ nutrition.","x"],["People are aware of ______ importance of reducing waste.","the"],["We must reduce ______ waste created by shoppers.","the"]]}},{"code":"2.2","name":"Food for thought","objective":"Từ vựng khoa học & y học; dùng so sánh hơn với tính từ và trạng từ (comparatives).","vocab":[["immune system","hệ miễn dịch","Exercise helps the immune system."],["bacteria (n)","vi khuẩn","The body helps kill bacteria."],["virus / viruses (n)","vi-rút","It helps fight off viruses."],["infection (n)","sự nhiễm trùng","The body fights the infection."],["disease (n)","bệnh tật","too many calories can lead to heart disease"],["recovery (n)","sự hồi phục","Your recovery is likely to be slower."],["susceptible (adj)","dễ bị (bệnh)","more susceptible to illness"],["crave (v)","thèm","You crave sweet, carbohydrate-rich snacks."],["suppress (v)","ức chế, kìm hãm","Too much exercise can suppress the immune system."],["restore (v)","khôi phục","Breakfast restores blood sugar levels."],["skip meals (v)","bỏ bữa","Skipping meals leads to low blood sugar."],["circulate (v)","lưu thông","Exercise helps the body circulate blood more quickly."]],"grammarTitle":"So sánh hơn: Tính từ & Trạng từ (Comparatives)","grammarPoints":["Tính từ NGẮN: thêm -(e)r + than → stronger, slower, cleaner. Tính từ DÀI: more + adj → more efficient, more susceptible.","Trạng từ: thường more + adv → more slowly, more clearly (bất quy tắc: better, worse).","So sánh KÉM: less + adj/adv (+ than) → less tired, less efficiently; hoặc 'not as … as'."],"tips":["Trạng từ thường = adj + -ly (slow→slowly, clear→clearly) rồi dùng 'more …ly'.","'more' đi với từ DÀI & trạng từ -ly; '-er' đi với tính từ NGẮN. Đừng dùng cả hai (✗ more stronger).","Bất quy tắc: good→better, bad→worse, far→further/farther."],"extra":{"intro":"Viết dạng so sánh đúng của từ trong ngoặc (comparative).","items":[["Potatoes release energy much ______ (slow) than sweet snacks.","more slowly"],["I can see ______ (clear) with contact lenses.","more clearly"],["People who exercise have a ______ (strong) immune system.","stronger"],["After sleeping early, I'm much ______ (tired) at school.","less tired"],["You're ______ (likely) to have mood swings if you're hungry.","more likely"],["Students without breakfast work ______ (efficient) in the morning.","less efficiently"]]}},{"code":"2.3","name":"Are you getting enough sleep?","objective":"Đọc & tóm tắt bài báo về thiết bị số và giấc ngủ; từ vựng về giấc ngủ.","vocab":[["exhausted (adj)","kiệt sức","She feels exhausted every morning."],["wind down (v)","thư giãn, nghỉ ngơi (trước khi ngủ)","You need time to wind down before sleep."],["at risk","có nguy cơ","Teenagers are at risk of sleep problems."],["banish (v)","loại bỏ, đuổi đi","Banishing technology from the bedroom helps."],["promote (v)","thúc đẩy, khuyến khích","A dark room promotes good sleep."],["focus group","nhóm nghiên cứu nhỏ","A focus group of 500 students was studied."],["media devices","thiết bị điện tử","People spend hours on media devices."],["anxiety (n)","sự lo âu","Lack of sleep can cause anxiety and depression."],["recover (v)","hồi phục","The body needs time to recover overnight."],["midday nap","giấc ngủ trưa","Is a midday nap a good idea?"]],"grammarTitle":"Kỹ năng: Viết tóm tắt (Summary) & từ vựng về giấc ngủ","grammarPoints":["Tóm tắt = viết lại Ý CHÍNH bằng lời của mình, NGẮN hơn bài gốc, bỏ ví dụ và chi tiết nhỏ.","Tìm ý chính bằng cách trả lời Who / What / Why / How trước khi viết.","Dùng từ nối (Firstly, In addition, However, Finally) và paraphrase (đổi từ đồng nghĩa)."],"tips":["Không chép nguyên câu; đổi cấu trúc & từ đồng nghĩa (devices→gadgets, avoid→stay away from).","Giữ tóm tắt khoảng 1/3 độ dài bài gốc, chỉ nêu ý chính.","Mẹo ngủ ngon từ bài: tắt thiết bị 60–90 phút trước khi ngủ; phòng ngủ không có công nghệ."],"extra":{"intro":"Điền từ vựng đúng (theo nghĩa gợi ý).","items":[["feeling very tired = ______","exhausted"],["to relax before sleep = wind ______","down"],["in danger of something bad = at ______","risk"],["getting rid of technology = ______","banishing"],["to encourage something to happen = ______","promote"],["a small group studied in research = ______ group","focus"]]}},{"code":"2.W","name":"Writing Project #2 – Describing a Photograph","objective":"Viết bài miêu tả một bức ảnh: dàn ý (success criteria), bài mẫu, từ vựng & mẫu câu (functional language).","vocab":[["well-being (n)","sự khỏe mạnh & hạnh phúc","Food and sleep affect our well-being."],["nutritious (adj)","bổ dưỡng","a nutritious, balanced meal"],["balanced (adj)","cân bằng","a balanced diet"],["active (adj)","năng động","She leads an active life."],["energetic (adj)","tràn đầy năng lượng","He feels energetic after exercise."],["relaxed (adj)","thư giãn, thoải mái","The atmosphere seems relaxed."],["cheerful (adj)","vui vẻ","The boy looks cheerful."],["exhausted (adj)","kiệt sức","They look exhausted after the race."],["unhealthy (adj)","không lành mạnh","an unhealthy diet"],["atmosphere (n)","bầu không khí","The scene creates a warm atmosphere."],["appearance (n)","vẻ ngoài","She takes care of her appearance."],["foreground / background","tiền cảnh / hậu cảnh","In the foreground… / In the background…"]],"grammarTitle":"✍️ Hướng dẫn viết: Miêu tả một bức ảnh (Describing a Photograph)","grammarPoints":["MỤC ĐÍCH: Miêu tả rõ bức ảnh và nêu CẢM NHẬN cá nhân có lý do.","TIÊU CHÍ: ① Giới thiệu toàn cảnh & tâm điểm · ② Sắp xếp chi tiết hợp lý (foreground → background) · ③ Dùng từ miêu tả giác quan chính xác · ④ Giải thích cảm nhận kèm lý do/dẫn chứng · ⑤ Dấu câu đúng & văn phong phù hợp.","BỐ CỤC 4 đoạn: (1) Toàn cảnh → (2) Tâm điểm/chi tiết chính → (3) Suy đoán (Perhaps/may/might) → (4) Cảm xúc & ý kiến của em.","BÀI MẪU – “Kindness on a Rainy Day”: At first glance, the photograph shows a cold and rainy morning outside a school. In the foreground, small puddles cover the pavement like mirrors. In the background, several students are walking quickly towards the entrance. In the centre, an older boy is sharing a bright yellow umbrella with a younger student and smiling. Perhaps the younger boy forgot his umbrella. The scene creates a feeling of warmth and kindness. I like this photograph because it shows how a small act of care can make a difficult day better."],"tips":["Toàn cảnh: The photograph shows… / At first glance…","Vị trí: In the foreground… / Behind them… / In the background… / In the centre of the photograph… / On the left/right…","Vẻ ngoài: She appears… / It seems as though… / They seem to be…","Suy đoán: Perhaps… / She may have… / They might…","Cảm xúc: She looks… because… / The scene creates a feeling of… / The image makes me feel… because…","Ý kiến: I like this photograph because… / The picture reminds us that… / This may suggest that…"],"extra":{"intro":"Điền mẫu câu (functional language) phù hợp để hoàn thành bài miêu tả.","items":[["At first ______, the photograph shows a rainy morning.","glance"],["In the ______, small puddles cover the pavement.","foreground"],["In the ______, students are walking to school.","background"],["______ the younger boy forgot his umbrella.","Perhaps"],["The scene ______ a feeling of warmth and kindness.","creates"],["I like this photograph ______ it shows kindness.","because"]]}}];
+const norm = s => (s||"").toLowerCase().replace(/[.,!?;:'"()]/g,"").replace(/\s+/g," ").trim();
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function sample(arr,n,exclude){const pool=arr.filter(x=>x!==exclude);return shuffle(pool).slice(0,n);}
+const ALLVOCAB=LESSONS.flatMap(L=>L.vocab);
+
+function renderHome(){
+  const g=document.getElementById('lgrid');g.innerHTML='';
+  LESSONS.forEach((L,i)=>{
+    const c=el('div','lcard');
+    c.innerHTML='<span class="code">Bài '+L.code+'</span><h3>'+L.name+'</h3><p>'+L.objective+'</p>';
+    c.onclick=()=>openLesson(i);g.appendChild(c);
+  });
+}
+
+function openLesson(i){
+  const L=LESSONS[i];
+  document.getElementById('home').style.display='none';
+  const box=document.getElementById('lesson');box.style.display='block';box.innerHTML='';
+  const back=el('button','back','← Về danh sách bài');
+  back.onclick=()=>{box.style.display='none';document.getElementById('home').style.display='block';window.scrollTo(0,0);};
+  box.appendChild(back);
+  box.appendChild(el('h2','sec','Bài '+L.code+' – '+L.name));
+
+  const tabs=el('div','tabs');const panels=[];
+  ['🎮 Ôn từ vựng','📘 Ngữ pháp','✍️ Bài tập'].forEach((n,ti)=>{
+    const t=el('div','tab'+(ti===0?' active':''),n);
+    t.onclick=()=>{tabs.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');panels.forEach(p=>p.classList.remove('active'));panels[ti].classList.add('active');};
+    tabs.appendChild(t);
+  });
+  box.appendChild(tabs);
+
+  const p1=el('div','panel active');buildVocabGames(p1,L);panels.push(p1);box.appendChild(p1);
+  const p2=el('div','panel');buildGrammar(p2,L);panels.push(p2);box.appendChild(p2);
+  const p3=el('div','panel');buildExercises(p3,L);panels.push(p3);box.appendChild(p3);
+  window.scrollTo(0,0);
+}
+
+/* ---------- VOCAB GAMES ---------- */
+function buildVocabGames(root,L){
+  const games=['📇 Thẻ ghi nhớ','🟢 Chọn nghĩa','🔤 Chọn từ','🔗 Nối từ','⌨️ Điền từ'];
+  const chips=el('div','games');const stage=el('div','');
+  const renderers=[gFlash,gWordToMean,gMeanToWord,gMatch,gType];
+  games.forEach((g,gi)=>{
+    const c=el('div','gchip'+(gi===0?' active':''),g);
+    c.onclick=()=>{chips.querySelectorAll('.gchip').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderers[gi](stage,L);};
+    chips.appendChild(c);
+  });
+  root.appendChild(chips);root.appendChild(stage);gFlash(stage,L);
+}
+function scoreBar(){const p=el('div','progress','<div></div>');const s=el('div','score','');return{p,s,set(o,t){p.firstChild.style.width=(o/t*100)+'%';s.textContent=o+' / '+t;}};}
+
+function gFlash(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Bấm vào thẻ để lật xem nghĩa & ví dụ. Bấm “Xáo thẻ” để đổi thứ tự.'));
+  const grid=el('div','fc-grid');
+  function draw(){grid.innerHTML='';shuffle(L.vocab).forEach(v=>{
+    const f=el('div','flip');
+    f.innerHTML='<div class="flip-inner"><div class="face front"><b>'+v[0]+'</b></div><div class="face back-face"><div class="mean">'+v[1]+'</div><div class="ex">'+v[2]+'</div></div></div>';
+    f.onclick=()=>f.classList.toggle('on');grid.appendChild(f);});}
+  const row=el('div','btnrow');const b=el('button','act o','🔀 Xáo thẻ');b.onclick=draw;row.appendChild(b);
+  stage.appendChild(row);stage.appendChild(grid);draw();
+}
+function mcqGame(stage,L,makeQ,intro){
+  stage.innerHTML='';stage.appendChild(el('p','hint',intro));
+  const sb=scoreBar();stage.appendChild(sb.p);const holder=el('div','');stage.appendChild(holder);
+  const win=el('div','win','🎉 Tuyệt vời! Em đã trả lời hết!');
+  const row=el('div','btnrow');const nb=el('button','act o','🔀 Đổi đề');row.appendChild(nb);row.appendChild(sb.s);
+  stage.appendChild(row);stage.appendChild(win);
+  let total=0,ok=0;
+  function build(){holder.innerHTML='';win.style.display='none';ok=0;
+    const qs=shuffle(L.vocab);total=qs.length;sb.set(0,total);
+    qs.forEach((v,qi)=>{
+      const {stem,correct,options}=makeQ(v,L);
+      const q=el('div','q');q.appendChild(el('div','qt',(qi+1)+'. '+stem));
+      const od=el('div','opts');
+      shuffle(options).forEach(opt=>{
+        const o=el('div','opt',opt);
+        o.onclick=()=>{
+          od.querySelectorAll('.opt').forEach(x=>x.classList.add('disabled'));
+          if(opt===correct){o.classList.add('correct');ok++;}
+          else{o.classList.add('wrong');od.querySelectorAll('.opt').forEach(x=>{if(x.textContent===correct)x.classList.add('correct');});}
+          sb.set(ok,total);if(document.querySelectorAll('.q .opt.disabled').length>=0){}
+          if([...holder.querySelectorAll('.opts')].every(g=>g.querySelector('.disabled')))win.style.display='block';
+        };
+        od.appendChild(o);
+      });
+      q.appendChild(od);holder.appendChild(q);
+    });
+  }
+  nb.onclick=build;build();
+}
+function gWordToMean(stage,L){mcqGame(stage,L,(v,L)=>{
+  const distract=sample(ALLVOCAB.map(x=>x[1]),3,v[1]);
+  return{stem:'“<b>'+v[0]+'</b>” nghĩa là gì?',correct:v[1],options:[v[1],...distract]};
+},'Chọn NGHĨA đúng của từ.');}
+function gMeanToWord(stage,L){mcqGame(stage,L,(v,L)=>{
+  const distract=sample(ALLVOCAB.map(x=>x[0]),3,v[0]);
+  return{stem:'Từ nào có nghĩa: “<b>'+v[1]+'</b>”?',correct:v[0],options:[v[0],...distract]};
+},'Chọn TỪ đúng theo nghĩa.');}
+
+function gMatch(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Bấm 1 từ bên trái rồi bấm nghĩa đúng bên phải để nối. Nối hết là thắng!'));
+  const sb=scoreBar();stage.appendChild(sb.p);
+  const win=el('div','win','🎉 Xuất sắc! Em đã nối đúng tất cả!');
+  const wrap=el('div','match');const left=el('div','col');const right=el('div','col');
+  wrap.appendChild(left);wrap.appendChild(right);stage.appendChild(wrap);
+  const row=el('div','btnrow');const nb=el('button','act o','🔀 Chơi lại');row.appendChild(nb);row.appendChild(sb.s);
+  stage.appendChild(row);stage.appendChild(win);
+  function build(){left.innerHTML='';right.innerHTML='';win.style.display='none';
+    const pick=shuffle(L.vocab).slice(0,Math.min(6,L.vocab.length));
+    const total=pick.length;let done=0;sb.set(0,total);let sel=null;
+    pick.forEach(v=>{const w=el('div','mitem',v[0]);w.dataset.k=v[0];left.appendChild(w);
+      w.onclick=()=>{if(sel)sel.classList.remove('sel');sel=w;w.classList.add('sel');};});
+    shuffle(pick).forEach(v=>{const m=el('div','mitem',v[1]);m.dataset.k=v[0];right.appendChild(m);
+      m.onclick=()=>{if(!sel)return;
+        if(sel.dataset.k===m.dataset.k){sel.classList.remove('sel');sel.classList.add('done');m.classList.add('done');sel=null;done++;sb.set(done,total);if(done===total)win.style.display='block';}
+        else{m.classList.add('bad');const s=sel;setTimeout(()=>{m.classList.remove('bad');s.classList.remove('sel');},450);sel=null;}
+      };});
+  }
+  nb.onclick=build;build();
+}
+function gType(stage,L){
+  stage.innerHTML='';stage.appendChild(el('p','hint','👉 Đọc nghĩa (và ví dụ) rồi gõ lại TỪ tiếng Anh. Bấm “Đổi đề” để ra câu khác.'));
+  const sb=scoreBar();stage.appendChild(sb.p);const holder=el('div','');stage.appendChild(holder);
+  const row=el('div','btnrow');const chk=el('button','act g','✓ Kiểm tra');const nb=el('button','act o','🔀 Đổi đề');
+  row.appendChild(chk);row.appendChild(nb);row.appendChild(sb.s);stage.appendChild(row);
+  let qs=[];
+  function build(){holder.innerHTML='';qs=[];
+    shuffle(L.vocab).forEach((v,qi)=>{
+      const hideWord=w=>v[2].replace(new RegExp(v[0].split(' ')[0].replace(/[^a-zA-Z]/g,''),'ig'),'____');
+      const q=el('div','q');
+      q.innerHTML='<div class="qt">'+(qi+1)+'. Nghĩa: <b>'+v[1]+'</b><br><span style="font-size:.85rem;color:#667;font-style:italic">Ví dụ: '+hideWord()+'</span></div><input placeholder="Gõ từ tiếng Anh..." autocomplete="off"><div class="fb"></div>';
+      holder.appendChild(q);qs.push({q,ans:v[0]});
+    });sb.set(0,qs.length);
+  }
+  function grade(){let ok=0;qs.forEach(o=>{const inp=o.q.querySelector('input'),fb=o.q.querySelector('.fb');o.q.classList.remove('correct','wrong');if(!inp.value.trim()){fb.textContent='';return;}
+    const u=norm(inp.value),a=norm(o.ans);const good=u===a||a.includes(u)&&u.length>2||u.includes(a.split(' ')[0]);
+    if(good){o.q.classList.add('correct');fb.textContent='Chính xác! ✔';ok++;}else{o.q.classList.add('wrong');fb.textContent='Đáp án: '+o.ans;}});sb.set(ok,qs.length);}
+  chk.onclick=grade;nb.onclick=build;build();
+}
+
+/* ---------- GRAMMAR ---------- */
+function buildGrammar(root,L){
+  const gb=el('div','gbox');
+  gb.innerHTML='<h3 style="color:var(--blue);margin-bottom:8px">'+L.grammarTitle+'</h3><ul>'+L.grammarPoints.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  root.appendChild(gb);
+  const tp=el('div','tips');tp.innerHTML='<b>💡 TIPS & TRICKS – Lưu ý</b><ul>'+L.tips.map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  root.appendChild(tp);
+}
+
+/* ---------- EXERCISES (grammar + vocab review), reshuffled ---------- */
+function buildExercises(root,L){
+  const top=el('div','btnrow');const nb=el('button','act o','🔀 Đổi đề (xáo trộn)');top.appendChild(nb);
+  root.appendChild(top);
+  const gWrap=el('div','');root.appendChild(gWrap);
+  function build(){
+    gWrap.innerHTML='';
+    // A) Grammar exercises shuffled
+    gWrap.appendChild(el('div','subhead','A. Ngữ pháp – '+L.grammarTitle));
+    const sbG=scoreBar();gWrap.appendChild(sbG.p);const gHolder=el('div','');gWrap.appendChild(gHolder);
+    const gqs=[];
+    shuffle(L.extra.items).forEach((it,qi)=>{
+      const q=el('div','q');const label=it[0].includes('_')?it[0]:('<b>'+it[0]+'</b> → ?');
+      q.innerHTML='<div class="qt">'+(qi+1)+'. '+label+'</div><input placeholder="Nhập đáp án..." autocomplete="off"><div class="fb"></div>';
+      gHolder.appendChild(q);gqs.push({q,ans:it[1]});
+    });sbG.set(0,gqs.length);
+    const gRow=el('div','btnrow');const gChk=el('button','act g','✓ Chấm phần A');gRow.appendChild(gChk);gRow.appendChild(sbG.s);gWrap.appendChild(gRow);
+    gChk.onclick=()=>{let ok=0;gqs.forEach(o=>{const inp=o.q.querySelector('input'),fb=o.q.querySelector('.fb');o.q.classList.remove('correct','wrong');if(!inp.value.trim()){fb.textContent='';return;}
+      const u=norm(inp.value),a=norm(o.ans);const good=u===a||a.split(/\s*\/\s*/).every(p=>u.includes(norm(p)))||(u.split(' ').length>1&&a.includes(u)&&u.length>3);
+      if(good){o.q.classList.add('correct');fb.textContent='Chính xác! ✔';ok++;}else{o.q.classList.add('wrong');fb.textContent='Đáp án: '+o.ans;}});sbG.set(ok,gqs.length);};
+
+    // B) Vocabulary review (MCQ word->meaning) shuffled + random distractors
+    gWrap.appendChild(el('div','subhead','B. Ôn từ vựng (chọn nghĩa đúng)'));
+    const sbV=scoreBar();gWrap.appendChild(sbV.p);const vHolder=el('div','');gWrap.appendChild(vHolder);
+    let vok=0,vtot=0;const picks=shuffle(L.vocab).slice(0,Math.min(6,L.vocab.length));vtot=picks.length;sbV.set(0,vtot);
+    picks.forEach((v,qi)=>{
+      const correct=v[1];const options=shuffle([correct,...sample(ALLVOCAB.map(x=>x[1]),3,correct)]);
+      const q=el('div','q');q.appendChild(el('div','qt',(qi+1)+'. “<b>'+v[0]+'</b>” =?'));
+      const od=el('div','opts');
+      options.forEach(opt=>{const o=el('div','opt',opt);o.onclick=()=>{od.querySelectorAll('.opt').forEach(x=>x.classList.add('disabled'));
+        if(opt===correct){o.classList.add('correct');vok++;}else{o.classList.add('wrong');od.querySelectorAll('.opt').forEach(x=>{if(x.textContent===correct)x.classList.add('correct');});}
+        sbV.set(vok,vtot);};od.appendChild(o);});
+      q.appendChild(od);vHolder.appendChild(q);
+    });
+  }
+  nb.onclick=build;build();
+}
+
+renderHome();
+</script>
+</body>
+</html>
